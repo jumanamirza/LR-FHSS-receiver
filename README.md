@@ -8,7 +8,7 @@ This webpage contains the source code of LR-FHSS-receiver written in Matlab.
 To test it, you may download the trace files collected in our experiments and feed the trace to LR-FHSS-receiver as input, or collect and use your own traces. 
 Our trace files can be downloaded from “pkttrace” folder.
 
-To run LR-FHSS-receiver, MATLAB R2021b or above is needed, along with the following toolboxes: Communications Toolbox, Signal Processing Toolbox and DSP System Toolbox. 
+To run LR-FHSS-receiver, MATLAB is needed, along with the some toolboxes: such as Communications Toolbox, Signal Processing Toolbox and DSP System Toolbox. 
 
 Our trace files were collected using sx126x device and from two different data rate which are DR 8 and DR 9. For each DR, 100 traces have been uploaded, name of traces range between 1 to 500 for DR8 and between 501 to 1000 for DR9. Each trace file contains 1 packet where the payload length size range between 8-16 bytes.
 
