@@ -1,4 +1,5 @@
-Long-Range Frequency Hopping Spread Spectrum (LR-FHSS) receiver that able to decode LR-FHSS packets 
+Long-Range Frequency Hopping Spread Spectrum (LR-FHSS) receiver that able to decode LR-FHSS packets.
+
 Long Range-Frequency Hopping Spread Spectrum (LR-FHSS) is a new physical layer option that has been recently added to the LoRa family with the promise of achieving much higher network capacity than the previous versions of LoRa.
 
 LR-FHSS-receiver is capable of decoding LR-FHSS packets transmitted by sx126x or lr1110 devices.
