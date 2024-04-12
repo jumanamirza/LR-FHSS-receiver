@@ -7,7 +7,7 @@ LR-FHSS-receiver is capable of decoding LR-FHSS packets transmitted by sx126x or
 This webpage contains the source code of LR-FHSS-receiver written in Matlab. 
 
 To test it, you may download the trace files collected in our experiments and feed the trace to LR-FHSS-receiver as input, or collect and use your own traces. 
-Our trace files can be downloaded from “pkttrace” folder.
+Our trace files can be downloaded from “[pkttrace](https://zenodo.org/records/10965761)”.
 
 To run LR-FHSS-receiver, MATLAB is needed, along with the some toolboxes: such as Communications Toolbox, Signal Processing Toolbox and DSP System Toolbox. 
 
