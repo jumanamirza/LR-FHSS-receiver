@@ -29,7 +29,7 @@ for pktidx=1:length(FoundDataSeg)
     thisdecoderes.cost = c;
     thisdecoderes.dewhitening = lrfh_dewhitening_payload(thisdecoderes.decode,length(thisdecoderes.decode)/8);
     tempp = reshape(thisdecoderes.dewhitening,8,length(thisdecoderes.dewhitening)/8)';
-    thisdecoderes.foundpayload = bi2de(tempp);
+    thisdecoderes.foundpayload = bi2de(tempp, "left-msb");
 
     thispkt.CRCpass = thisdecoderes.CRCpass;
     thispkt.decoderes = thisdecoderes;
