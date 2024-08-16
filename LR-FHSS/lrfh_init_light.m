@@ -16,10 +16,18 @@ for h=2:length(LRF_cfg.SYNC_WORD)
     end
 end
 LRF_cfg.SYNC_vec = exp(1i*LRF_cfg.SYNC_phasevals);
-
-LRF_cfg.samplingrate = 500000; % 
-LRF_cfg.allBW = 137000;
-LRF_cfg.grid_num = 8;
+LRF_cfg.region_val_EU = 0;
+LRF_cfg.region_val_US = 1;
+LRF_cfg.region = LRF_cfg.region_val_EU;
+if LRF_cfg.region == LRF_cfg.region_val_EU
+    LRF_cfg.samplingrate = 500000; 
+    LRF_cfg.allBW = 137000;
+    LRF_cfg.grid_num = 8;
+elseif LRF_cfg.region == LRF_cfg.region_val_US
+    LRF_cfg.samplingrate = 2000000; 
+    LRF_cfg.allBW = 1523000;
+    LRF_cfg.grid_num = 52;
+end 
 LRF_cfg.BW = 488;
 LRF_cfg.baudrate = 1/LRF_cfg.BW; 
 LRF_cfg.smblsmplnum = round(LRF_cfg.samplingrate*LRF_cfg.baudrate); 
@@ -30,7 +38,7 @@ LRF_cfg.staysmplnum_hdr = LRF_cfg.staytime_hdr*LRF_cfg.samplingrate;
 LRF_cfg.hdr_num = 2;
 LRF_cfg.sync_start_bit = 41;
 LRF_cfg.hdr_bit_num = 113;
-LRF_cfg.lowpassHz = 50*2000000/LRF_cfg.samplingrate;
+LRF_cfg.lowpassHz = 200;%50*2000000/LRF_cfg.samplingrate;
 
 LRF_cfg.DSF = 10;
 
@@ -54,6 +62,7 @@ LRF_cfg.coherelensec = 0.001; % channel cohereence len
 LRF_cfg.coheresmpnum = round(LRF_cfg.coherelensec*LRF_cfg.samplingrate);  
 LRF_cfg.max_pkt_len_sec = 1.8;
 LRF_cfg.finesiglen = ceil(LRF_cfg.smblsmplnum*LRF_cfg.hdr_bit_num*1.02);
+LRF_cfg.max_payload_byte_num = 100; 
 
 lrfh_init_trellis;
 
