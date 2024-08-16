@@ -1,12 +1,11 @@
 lrfh_init;
 lrfh_init_light;
-
 lrfh_sim_config.pkt_num = 1;
 lrfh_sim_config.siglensec = 10;  
 lrfh_sim_config.base_SNR_dB = -14; lrfh_sim_config.PDiff_dB = 0;
 lrfh_sim_config.sim_channel = 'AWGN'; % 'AWGN' 'ETU'
 lrfh_sim_config.drsel = LRF_cfg.CONST_use_DR9; % NOTE: 1: DR8, 2, DR9, 
-lrfh_sim_config.USE_FILE_IDX = 1000;
+lrfh_sim_config.USE_FILE_IDX = 1;
 LRF_cfg.siglen = lrfh_sim_config.siglensec * LRF_cfg.samplingrate;
 lrfh_sim_config.siglen = LRF_cfg.siglen;
 lrfh_sim_config.SNR_dB = rand(1,lrfh_sim_config.pkt_num)*lrfh_sim_config.PDiff_dB + lrfh_sim_config.base_SNR_dB;
