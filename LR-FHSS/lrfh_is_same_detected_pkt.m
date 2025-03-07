@@ -1,3 +1,7 @@
+% Copyright (C) 2025 
+% Florida State University 
+% All Rights Reserved
+
 function res = lrfh_is_same_detected_pkt(thispkt, thatpkt)
     res = 0;
     if abs(thispkt.start - thatpkt.start) < 1000 ... 

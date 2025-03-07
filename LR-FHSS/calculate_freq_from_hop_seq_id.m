@@ -12,9 +12,12 @@ if status == 0 %LR_FHSS_STATUS_OK
     freq=[];
     for idx=1:num_frag+header_count
         [next_freq_in_pll_steps,lfsr_state] = sx126x_lr_fhss_get_next_freq_in_pll_steps( lfsr_state, grid, n_grid, enable_hop, polynomial, xoring_seed, hop_seq_id,current_hop, header_count )  ; 
+        %next_freq_in_pll_steps = sx126x_lr_fhss_get_next_freq_in_pll_steps( lfsr_state, grid, n_grid, enable_hop, polynomial, xoring_seed, hop_seq_id,hop, header_count )
+        %[hop, lfsr_state]=lr_fhss_get_next_state(lfsr_state, n_grid,polynomial,xoring_seed );
         freq = [ freq next_freq_in_pll_steps ];
         current_hop=current_hop+1;
     end
+    % freq=freq(header_count+1:end);
     
 end
 end
@@ -97,23 +100,34 @@ end
 %------------------------------------------
 function [freq, lfsr_state]= sx126x_lr_fhss_get_next_freq_in_pll_steps(lfsr_state, grid, n_grid, enable_hop, polynomial, xoring_seed, hop_sequence_id,current_hop, header_count )
 
-[freq_table,lfsr_state] =lr_fhss_get_next_freq_in_grid(enable_hop, lfsr_state, n_grid, polynomial, xoring_seed, hop_sequence_id );
-    
-if grid ==1
-    nb_channel_in_grid = 8;
+    %execute if HOP_AT_CENTER_FREQ is defined
+if 0%HOP_AT_CENTER_FREQ
+    freq_table  = 0;
+    grid_offset = 0;
 else
-    nb_channel_in_grid = 52;
+    [freq_table,lfsr_state] =lr_fhss_get_next_freq_in_grid(enable_hop, lfsr_state, n_grid, polynomial, xoring_seed, hop_sequence_id );
+        
+    if grid ==1
+        nb_channel_in_grid = 8;
+    else
+        nb_channel_in_grid = 52;
+    end
+    grid_offset = (1 + mod(n_grid, 2 )) * ( nb_channel_in_grid / 2 );
 end
-grid_offset = (1 + mod(n_grid, 2 )) * ( nb_channel_in_grid / 2 );
-center_freq_in_pll_steps= 910163968; 
-grid_in_pll_steps = sx126x_lr_fhss_get_grid_in_pll_steps( grid );
-freq = - freq_table * grid_in_pll_steps -( 0 + grid_offset ) * 512;
+
+    center_freq_in_pll_steps= 910163968; %for trace 1-6 and > 12
+    %center_freq_in_pll_steps= 959447040; %for trace 7-12
+    grid_in_pll_steps = sx126x_lr_fhss_get_grid_in_pll_steps( grid );
+    freq = - freq_table * grid_in_pll_steps -( 0 + grid_offset ) * 512;
     
-               
-if 1
+    
+%execute if HOP_AT_CENTER_FREQ is not defined                  
+if 1%~HOP_AT_CENTER_FREQ
     % Perform frequency correction for every other sync header
     if enable_hop && ( current_hop < header_count ) 
         if  mod( ( header_count - current_hop ) , 2 ) == 0 
+            % OFFSET_SYNCWORD = 488.28125 / 2, and FREQ_STEP_SX1261_2 = 0.95367431640625, so
+            % OFFSET_SYNCWORD / FREQ_STEP_SX1261_2 = 256
             freq = freq + 256;
         end
     end
@@ -138,9 +152,9 @@ function [n_i,lfsr_state]= lr_fhss_get_next_freq_in_grid(enable_hop, lfsr_state,
         n_i = mod(hop_sequence_id, n_grid);
     end
 
-    t = de2bi(n_grid,8,'left-msb'); 
-    if n_i >= bi2de( t(1:end-1),'left-msb')
+    if n_i >= floor(bitsra(n_grid,1)) 
         n_i = n_i - n_grid; 
     end
+    %n_i=uint16(n_i);
 end
 %------------------------------------------

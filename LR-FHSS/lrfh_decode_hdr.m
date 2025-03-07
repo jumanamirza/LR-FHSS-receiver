@@ -5,10 +5,29 @@ function [decoded_hdr, decoded_hdr_info]=lrfh_decode_hdr(deint_header, myTrellis
 
     decodescores = zeros(myTrellis.numStates,2);
     alltryres = cell(1,myTrellis.numStates);
+
+    outbitsvals = [
+     0     0;
+     0     1;
+     1     0;
+     1     1
+     ];
+    precalcostvals = zeros(length(deint_header)/2,size(outbitsvals,1));
+    for i=1:length(deint_header)/2
+        thisrcv = deint_header(i*2-1:i*2);
+        for val=0:size(outbitsvals,1)-1
+            precalcostvals(i,val+1) = cal_Distance(outbitsvals(val+1,:), thisrcv, 1);
+        end
+    end
+    
     for idx=1:myTrellis.numStates
-        [this_decoded_hdr,match,min_cost] = vit_decode(idx-1,deint_header,myTrellis);
+        [this_decoded_hdr,match,min_cost] = vit_decode(idx-1,precalcostvals,myTrellis);
         decodescores(idx,:) = [match,min_cost];
         alltryres{idx} = this_decoded_hdr;
+        if match
+            [~, encode_state]= lrfh_con_encode_hdr(0,this_decoded_hdr,myTrellis,1);
+            break;
+        end
     end
     allpassidx = find(decodescores(:,1)==1); allfailidx = find(decodescores(:,1)==0);
     if length(allpassidx)
@@ -27,7 +46,7 @@ function [decoded_hdr, decoded_hdr_info]=lrfh_decode_hdr(deint_header, myTrellis
         decoded_hdr_info.syncindexbit = decoded_hdr(29:30);
         decoded_hdr_info.futureuse = decoded_hdr(31:32);
         decoded_hdr_info.CRC = decoded_hdr(33:end);
-        decoded_hdr_info.state = min_cost_idx;
+        decoded_hdr_info.state = encode_state+1;%min_cost_idx;
         decoded_hdr_info.min_cost = min_cost_val;  
     else
         [min_cost_val,min_cost_idx] = min(decodescores(:,2));
@@ -38,23 +57,13 @@ function [decoded_hdr, decoded_hdr_info]=lrfh_decode_hdr(deint_header, myTrellis
     end
 end
 
-function [data_out,match,min_cost]= vit_decode(state,data,myTrellis)
-    len = length(data)/2 ;
+function [data_out,match,min_cost]= vit_decode(state,precalcostvals,myTrellis)
+    len = size(precalcostvals,1) ;
     cost_string=ones(16,3)*1000; cost_string(state+1,2:3) = 0;
     decoded_string = zeros(16,len);
     new_decoded_string = zeros(16,len);
-    outbitsvals = [
-     0     0;
-     0     1;
-     1     0;
-     1     1
-     ];
     for i=1:len
-        thisrcv = data(i*2-1:i*2);
-        costvals = zeros(1,4);
-        for val=0:3
-            costvals(val+1) = cal_Distance(outbitsvals(val+1,:), thisrcv, 1);
-        end
+        costvals = precalcostvals(i,:);
         for h=1:8
             for hh=1:2
                 t1 = cost_string(h,2) + costvals(myTrellis.outputs(h,hh)+1);
